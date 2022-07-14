@@ -18,9 +18,17 @@ const getUserByEmail = async (email) => {
     }
 };
 
-const getUserQuery = async (query) => {
+// const getUserQuery = async (query) => {
+//     try {
+//         const getUserQuery = User.find(query);
+//         return getUserQuery;
+//     } catch (error) {
+//         return error.message;
+//     }
+// }
+const getUserQuery = async (filter, option) => {
     try {
-        const getUserQuery = User.find(query);
+        const getUserQuery = await User.find(filter, option);
         return getUserQuery;
     } catch (error) {
         return error.message;

@@ -92,29 +92,31 @@ const logIn = async (req, res) => {
 
 const getAllUser = async (req, res) => {
     try {
-        const { filter } = pick(req.query, ['filter'])
+        const { filter } = pick(req.query, ['filter', 'filter'])
         console.log(req.query);
         // const { option } = pick(req.query, ['sortBy', 'limit', 'page']);
         const query = {
             $and: [{ addedBy: req.user._id }],
         }
-        if (filter) {
+        if (!filter) {
+
+        } else {
             query.$and.push({
                 $or: [
                     {
-                        firstName: { $regex: `${filter}` }
+                        firstName: { $regex: `${filter}`, $options: 'i' }
                     },
                     {
-                        lastName: { $regex: `${filter}` }
+                        lastName: { $regex: `${filter}`, $options: 'i' }
                     },
                     {
-                        email: { $regex: `${filter}` }
+                        email: { $regex: `${filter}`, $options: 'i' }
                     },
+                    // {
+                    //     dob: { $regex: `${filter}`, $options: 'i' }
+                    // },
                     {
-                        dob: { $regex: `${filter}` }
-                    },
-                    {
-                        gender: { $regex: `${filter}` }
+                        gender: { $regex: `${filter}`, $options: 'i' }
                     },
                 ]
             })
