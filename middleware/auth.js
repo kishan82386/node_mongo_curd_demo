@@ -7,11 +7,7 @@ const encodeJwt = (payload) => {
 
 const decodeToken = async (req, res, next) => {
     try {
-
-        console.log(req.headers);
         const token = req.headers.authorization;
-        console.log(token);
-
         const decodeData = jwt.decode(token, process.env.JWT_SECRET);
         console.log(decodeData);
 

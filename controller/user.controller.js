@@ -93,7 +93,7 @@ const logIn = async (req, res) => {
 const getAllUser = async (req, res) => {
     try {
         const { filter } = pick(req.query, ['filter', 'filter'])
-        console.log(req.query);
+
         // const { option } = pick(req.query, ['sortBy', 'limit', 'page']);
         const query = {
             $and: [{ addedBy: req.user._id }],
@@ -256,6 +256,57 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const createOwnBulkUser = async (req, res) => {
+    try {
+        const { data } = req.body;
+        let existEmailUser = [];
+        let createdUserArry = [];
+        if (data.length > 0) {
+            for (let i = 0; data.length > i; i++) {
+                const getUserByEmail = await userService.getUserByEmail(data[i].email);
+
+                if (getUserByEmail) {
+                    existEmailUser.push(data[i].email);
+                } else {
+                    const createObject = {
+                        firstName: data[i].firstName,
+                        lastName: data[i].lastName,
+                        email: data[i].email,
+                        password: wordpressHash.HashPassword(data[i].password),
+                        dob: data[i].dob,
+                        gender: data[i].gender,
+                        addedBy: req.user._id
+                    }
+                    const createBulkOwnUser = await userService.createUser(createObject);
+                    if (createBulkOwnUser) {
+                        createdUserArry.push(createBulkOwnUser);
+                    }
+                }
+            }
+            res.status(201).json({
+                success: true,
+                data: {
+                    existEmailUser,
+                    createdUserArry
+                },
+                message: "Bulk user created successfully"
+            })
+        } else {
+            return res.status(500).json({
+                success: false,
+                data: null,
+                message: "plese provide atleast one user"
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: null,
+            message: error.message
+        });
+    }
+}
+
 module.exports = {
     userSignUP,
     logIn,
@@ -263,6 +314,8 @@ module.exports = {
     ownUserSignUP,
     getById,
     updateUserOwnuser,
-    deleteUser
+    deleteUser,
+    createOwnBulkUser
+
 };
 

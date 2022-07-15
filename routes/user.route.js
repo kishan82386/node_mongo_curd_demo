@@ -12,6 +12,8 @@ router.post("/ownUserCreate", Auth.decodeToken, userController.ownUserSignUP);
 router.get("/getuserbyid/:id", Auth.decodeToken, userController.getById);
 router.patch("/getuserbyid/:id", Auth.decodeToken, userController.updateUserOwnuser);
 router.delete("/getuserbyid/:id", Auth.decodeToken, userController.deleteUser);
+router.post("/createOwnBulkUser", Auth.decodeToken, userController.createOwnBulkUser);
+
 
 
 module.exports = router
