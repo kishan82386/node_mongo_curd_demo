@@ -151,7 +151,10 @@ const ownUserSignUP = async (req, res) => {
         }
 
         req.body.addedBy = req.user._id
-        req.body.password = wordpressHash.HashPassword(req.body.password);
+        //* password hashing
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(req.body.password, salt);
+        req.body.password = hashPassword;
         const createUser = await userService.createUser(req.body);
         console.log("createUser :>> ", createUser);
         return res.status(201).json({
@@ -269,11 +272,17 @@ const createOwnBulkUser = async (req, res) => {
                 if (getUserByEmail) {
                     existEmailUser.push(data[i].email);
                 } else {
+
+                    //* password hashing
+                    const salt = await bcrypt.genSalt(10);
+                    const hashPassword = await bcrypt.hash(data[i].password, salt);
+                    data[i].password = hashPassword;
+
                     const createObject = {
                         firstName: data[i].firstName,
                         lastName: data[i].lastName,
                         email: data[i].email,
-                        password: wordpressHash.HashPassword(data[i].password),
+                        password: hashPassword,
                         dob: data[i].dob,
                         gender: data[i].gender,
                         addedBy: req.user._id
