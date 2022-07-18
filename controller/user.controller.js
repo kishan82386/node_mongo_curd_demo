@@ -1,4 +1,4 @@
-const wordpressHash = require("wordpress-hash-node");
+
 const bcrypt = require('bcrypt');
 const userService = require("../service/userService");
 const Auth = require('../middleware/auth');
