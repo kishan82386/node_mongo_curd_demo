@@ -1,4 +1,5 @@
 const wordpressHash = require("wordpress-hash-node");
+const bcrypt = require('bcrypt');
 const userService = require("../service/userService");
 const Auth = require('../middleware/auth');
 const pick = require('../utils/pick');
@@ -14,8 +15,11 @@ const userSignUP = async (req, res) => {
             });
         }
 
+        //* password hashing
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(req.body.password, salt);
+        req.body.password = hashPassword;
 
-        req.body.password = wordpressHash.HashPassword(req.body.password);
         const createUser = await userService.createUser(req.body);
         console.log("createUser :>> ", createUser);
         return res.status(201).json({
@@ -40,10 +44,7 @@ const logIn = async (req, res) => {
         const getUser = await userService.getUserByEmail(email);
 
         if (getUser) {
-            const comparePassword = wordpressHash.CheckPassword(
-                password,
-                getUser.password
-            );
+            const comparePassword = await bcrypt.compare(password, getUser.password);
 
             if (comparePassword) {
                 const paylod = {
